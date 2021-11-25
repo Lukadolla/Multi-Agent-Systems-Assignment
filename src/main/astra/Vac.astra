@@ -1,9 +1,12 @@
 agent Vac extends VacOntology{
     rule +!main(list args) {
+
         ei.launch("vacuumworld","dependency/vacuumworld-1.2.0.jar");
         ei.join();
+
         int i = 0;
         string startLocation;
+
         forall(string I : args) {
             if(i == 0){
                 ei.link(I);
@@ -88,7 +91,6 @@ agent Vac extends VacOntology{
     }
 
     rule +!obstacleAvoid() : squareInfo("left", string a) & squareInfo("right", string b){
-
         if(a == "dust" | a == "empty"){
             ei.move("left", 1);
         } else if(b == "dust" | b == "empty"){
