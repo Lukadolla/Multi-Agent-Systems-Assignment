@@ -1,6 +1,5 @@
 agent Vac extends VacOntology{
     rule +!main(list args) {
-
         ei.launch("vacuumworld","dependency/vacuumworld-1.2.0.jar");
         ei.join();
 
@@ -19,33 +18,34 @@ agent Vac extends VacOntology{
 
         ei.move("west", 0);
 
-        S.sleep(5000);
+        S.sleep(2000);
 
         if(startLocation == "topLeft"){
-            !movement(0,0);
+            !movement(1,1);
         }
         if(startLocation == "topRight"){
-            !movement(15,2);
+            !movement(14,1);
         }
         if(startLocation == "botLeft"){
-            !movement(0,4);
+            !movement(1,6);
         }
         if(startLocation == "botRight"){
-            !movement(15,6);
+            !movement(14,6);
         }
     }
 
     rule +!movement(int x, int y) : locationInfo(int botx, int boty) & x == botx & y == boty {
-        if(y < 9){
-            if(x == 15){
-                !movement(0,y);
-            }else{
-                !movement(15,y);
-            }
+        if(x % 2 == 0){
+            x = x - 5;
         }else{
-            !movement(15,0);
+            x = x + 5;
         }
-        y = y+1;
+        if(y % 2 == 0){
+            y = y - 1;
+        }else{
+            y = y + 1;
+        }
+        !movement((x), (y));
     }
 
     rule +!movement(int x, int y) : locationInfo(int botx, int boty) & x > botx {
@@ -76,13 +76,14 @@ agent Vac extends VacOntology{
     }
 
     rule +!moveForward(string direction){
-        S.sleep(1000);
+        S.sleep(500);
         ei.move(direction, 0);
         !cleanTile();
         !goForward(direction);
     }
 
     rule +!goForward(string direction) {
+        !seekDust();
         foreach(squareInfo("forward", string z)){
             if(z == "empty" | z == "dust"){
                 ei.move("forward", 1);
@@ -92,7 +93,37 @@ agent Vac extends VacOntology{
         }
     }
 
-<<<<<<< HEAD
+    rule +!seekDust(){
+        string check = "true";
+        while(check == "true"){
+            S.sleep(500);
+            check = "false";
+            foreach(squareInfo("left", string z)){
+                if(z == "dust"){
+                    ei.move("left", 1);
+                    ei.clean();
+                    check="true";
+                }
+            }
+
+            foreach(squareInfo("right", string z)){
+                if(z == "dust"){
+                     ei.move("right", 1);
+                     ei.clean();
+                     check="true";
+                }
+            }
+
+            foreach(squareInfo("forward", string z)){
+               if(z == "dust"){
+                    ei.move("forward", 1);
+                    ei.clean();
+                    check="true";
+               }
+            }
+        }
+    }
+
     rule +!obstacleAvoid(string direction) : squareInfo("left", string a) & squareInfo("right", string b){
         if(direction == "east"){
             if(b == "dust" | b == "empty"){
@@ -114,6 +145,11 @@ agent Vac extends VacOntology{
             }
         }
 
+    }
+
+    rule +!obstacleAvoid(string direction){
+        C.println("Can't work out concept");
+        !obstacleAvoid(direction);
     }
 
     rule +!cleanTile(){
