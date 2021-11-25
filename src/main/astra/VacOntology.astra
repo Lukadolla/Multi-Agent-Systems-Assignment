@@ -4,7 +4,7 @@ agent VacOntology{
 	module EIS ei;
     module Debug debug;
 
-    types form{
+    types vac{
         formula squareInfo(string, string);
         formula locationInfo(int, int);
         formula startInfo(string);
