@@ -1,0 +1,13 @@
+agent VacOntology{
+    module Console C;
+    module System S;
+	module EIS ei;
+    module Debug debug;
+
+    types form{
+        formula squareInfo(string, string);
+        formula locationInfo(int, int);
+        formula startInfo(string);
+    }
+
+}

@@ -1,0 +1,23 @@
+agent Main extends VacOntology{
+
+	rule +!main(list args) {
+		ei.launch("vacuumworld","dependency/vacuumworld-1.2.0.jar");
+		ei.init([generation("no")]);
+		ei.join();
+
+		list E = ei.freeEntities();
+		forall(string ent : E) {
+			C.println("E="+E);
+		}
+
+        S.createAgent("yellow", "Vac");
+        S.setMainGoal("yellow", ["Decco","topLeft"]);
+        S.createAgent("red", "Vac");
+        S.setMainGoal("red", ["Henry","topRight"]);
+        S.createAgent("blue", "Vac");
+        S.setMainGoal("blue", ["Lloyd","botLeft"]);
+        S.createAgent("pink", "Vac");
+        S.setMainGoal("pink", ["Harry","botRight"]);
+        ei.startEnv();
+	}
+}
