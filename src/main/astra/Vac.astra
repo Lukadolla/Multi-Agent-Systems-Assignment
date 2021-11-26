@@ -71,7 +71,7 @@ agent Vac extends VacOntology{
     }
 
     rule +!moveForward(string direction){
-        S.sleep(500);
+        S.sleep(1000);
         ei.move(direction, 0);
         ei.clean();
         !goForward(direction);
@@ -79,9 +79,13 @@ agent Vac extends VacOntology{
 
     rule +!goForward(string direction) {
         !seekDust();
-        foreach(squareInfo("forward", string z)){
-            if(z == "empty" | z == "dust"){
+        foreach(squareInfo("forward", string f)){
+            if(f == "empty" | f == "dust"){
                 ei.move("forward", 1);
+
+                if(f == "dust"){
+                    ei.clean();
+                }
             } else{
                 !obstacleAvoid(direction);
             }
