@@ -125,13 +125,15 @@ agent Vac extends VacOntology{
             foreach(squareInfo("forwardLeft", string fl)){
                foreach(squareInfo("left", string l)){
                   foreach(squareInfo("forward", string f)){
-                     if(fl == "dust" & f == "empty"){
+                     if(fl == "dust" & (f == "empty" | f == "dust")){
                            ei.move("forward", 1);
+                           !cleanTile();
                            ei.move("left", 1);
                            ei.clean();
                            check="true";
-                     } else if(l == "empty" & fl == "dust"){
+                     } else if((l == "empty" |  l == "dust") & fl == "dust"){
                           ei.move("left", 1);
+                          !cleanTile();
                           ei.move("forward", 1);
                           ei.clean();
                           check="true";
@@ -143,13 +145,15 @@ agent Vac extends VacOntology{
             foreach(squareInfo("forwardRight", string fr)){
                foreach(squareInfo("right", string r)){
                   foreach(squareInfo("forward", string f)){
-                     if(fr == "dust" & f == "empty"){
+                     if(fr == "dust" & (f == "empty" | f == "dust")){
                            ei.move("forward", 1);
+                           !cleanTile();
                            ei.move("right", 1);
                            ei.clean();
                            check="true";
-                     } else if(r == "empty" & fr == "dust"){
+                     } else if((r == "empty" | r == "dust") & fr == "dust"){
                            ei.move("right", 1);
+                           !cleanTile();
                            ei.move("forward", 1);
                            ei.clean();
                            check="true";
