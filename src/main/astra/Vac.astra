@@ -21,31 +21,26 @@ agent Vac extends VacOntology{
         S.sleep(2000);
 
         if(startLocation == "topLeft"){
-            !movement(1,1);
+            !movement(0,1);
         }
         if(startLocation == "topRight"){
-            !movement(14,1);
+            !movement(15,3);
         }
         if(startLocation == "botLeft"){
-            !movement(1,6);
+            !movement(0,5);
         }
         if(startLocation == "botRight"){
-            !movement(14,6);
+            !movement(15,7);
         }
     }
 
     rule +!movement(int x, int y) : locationInfo(int botx, int boty) & x == botx & y == boty {
-        if(x % 2 == 0){
-            x = x - 5;
+        if(x == 15){
+            x = 0;
         }else{
-            x = x + 5;
+            x = 15;
         }
-        if(y % 2 == 0){
-            y = y - 1;
-        }else{
-            y = y + 1;
-        }
-        !movement((x), (y));
+        !movement(x, y);
     }
 
     rule +!movement(int x, int y) : locationInfo(int botx, int boty) & x > botx {
@@ -78,7 +73,7 @@ agent Vac extends VacOntology{
     rule +!moveForward(string direction){
         S.sleep(500);
         ei.move(direction, 0);
-        !cleanTile();
+        ei.clean();
         !goForward(direction);
     }
 
@@ -96,48 +91,85 @@ agent Vac extends VacOntology{
     rule +!seekDust(){
         string check = "true";
         while(check == "true"){
-            S.sleep(500);
+            S.sleep(1000);
             check = "false";
-            foreach(squareInfo("left", string z)){
-                if(z == "dust"){
+
+            foreach(squareInfo("left", string l)){
+                if(l == "dust"){
                     ei.move("left", 1);
                     ei.clean();
                     check="true";
                 }
             }
 
-            foreach(squareInfo("right", string z)){
-                if(z == "dust"){
+            foreach(squareInfo("right", string r)){
+                if(r == "dust"){
                      ei.move("right", 1);
                      ei.clean();
                      check="true";
                 }
             }
 
-            foreach(squareInfo("forward", string z)){
-               if(z == "dust"){
+            foreach(squareInfo("forward", string f)){
+               if(f == "dust"){
                     ei.move("forward", 1);
                     ei.clean();
                     check="true";
                }
             }
+
+            foreach(squareInfo("forwardLeft", string fl)){
+               foreach(squareInfo("left", string l)){
+                  foreach(squareInfo("forward", string f)){
+                     if(fl == "dust" & f == "empty"){
+                           ei.move("forward", 1);
+                           ei.move("left", 1);
+                           ei.clean();
+                           check="true";
+                     } else if(l == "empty" & fl == "dust"){
+                          ei.move("left", 1);
+                          ei.move("forward", 1);
+                          ei.clean();
+                          check="true";
+                     }
+                  }
+               }
+            }
+
+            foreach(squareInfo("forwardRight", string fr)){
+               foreach(squareInfo("right", string r)){
+                  foreach(squareInfo("forward", string f)){
+                     if(fr == "dust" & f == "empty"){
+                           ei.move("forward", 1);
+                           ei.move("right", 1);
+                           ei.clean();
+                           check="true";
+                     } else if(r == "empty" & fr == "dust"){
+                           ei.move("right", 1);
+                           ei.move("forward", 1);
+                           ei.clean();
+                           check="true";
+                     }
+                  }
+               }
+            }
         }
     }
 
-    rule +!obstacleAvoid(string direction) : squareInfo("left", string a) & squareInfo("right", string b){
+    rule +!obstacleAvoid(string direction) : squareInfo("left", string l) & squareInfo("right", string r){
         if(direction == "east"){
-            if(b == "dust" | b == "empty"){
+            if(r == "dust" | r == "empty"){
                         ei.move("right", 1);
-                } else if(a == "dust" | a == "empty"){
+                } else if(l == "dust" | l == "empty"){
                    ei.move("left", 1);
                 } else {
                    ei.move("back", 1);
                    ei.move("right", 1);
             }
         } else{
-            if(a == "dust" | a == "empty"){
+            if(l == "dust" | l == "empty"){
                 ei.move("left", 1);
-            } else if(b == "dust" | b == "empty"){
+            } else if(r == "dust" | r == "empty"){
                 ei.move("right", 1);
             } else {
                 ei.move("back", 1);
@@ -153,76 +185,76 @@ agent Vac extends VacOntology{
     }
 
     rule +!cleanTile(){
-        foreach(squareInfo("here", string t)){
-            if(t == "dust"){
+        foreach(squareInfo("here", string h)){
+            if(h == "dust"){
                 ei.clean();
             }
         }
 
     }
 
-    rule +$ei.event(square("here", string y)) : squareInfo("here", string z){
-        -squareInfo("here", z);
-        +squareInfo("here", y);
+    rule +$ei.event(square("here", string h)) : squareInfo("here", string oh){
+        -squareInfo("here", oh);
+        +squareInfo("here", h);
     }
 
-    rule +$ei.event(square("here", string y)) {
-        +squareInfo("here", y);
+    rule +$ei.event(square("here", string h)) {
+        +squareInfo("here", h);
     }
 
-    rule +$ei.event(square("forward", string y)) : squareInfo("forward", string z){
-         -squareInfo("forward", z);
-         +squareInfo("forward", y);
+    rule +$ei.event(square("forward", string f)) : squareInfo("forward", string of){
+         -squareInfo("forward", of);
+         +squareInfo("forward", f);
     }
 
-    rule +$ei.event(square("forward", string y)) {
-         +squareInfo("forward", y);
+    rule +$ei.event(square("forward", string f)) {
+         +squareInfo("forward", f);
     }
 
-    rule +$ei.event(square("left", string y)) : squareInfo("left", string z) {
-        -squareInfo("left", z);
-        +squareInfo("left", y);
+    rule +$ei.event(square("left", string l)) : squareInfo("left", string ol) {
+        -squareInfo("left", ol);
+        +squareInfo("left", l);
     }
 
-    rule +$ei.event(square("left", string y))  {
-        +squareInfo("left", y);
+    rule +$ei.event(square("left", string l))  {
+        +squareInfo("left", l);
     }
 
-    rule +$ei.event(square("right", string y)) : squareInfo("right", string z) {
-        -squareInfo("right", z);
-        +squareInfo("right", y);
+    rule +$ei.event(square("right", string r)) : squareInfo("right", string or) {
+        -squareInfo("right", or);
+        +squareInfo("right", r);
     }
 
-    rule +$ei.event(square("right", string y)){
-        +squareInfo("right", y);
+    rule +$ei.event(square("right", string r)){
+        +squareInfo("right", r);
     }
 
-    rule +$ei.event(square("forwardLeft", string y)) : squareInfo("forwardLeft", string z) {
-        -squareInfo("forwardLeft", z);
-        +squareInfo("forwardLeft", y);
+    rule +$ei.event(square("forwardLeft", string fl)) : squareInfo("forwardLeft", string ofl) {
+        -squareInfo("forwardLeft", ofl);
+        +squareInfo("forwardLeft", fl);
     }
 
-    rule +$ei.event(square("forwardLeft", string y)) {
-        +squareInfo("forwardLeft", y);
+    rule +$ei.event(square("forwardLeft", string fl)) {
+        +squareInfo("forwardLeft", fl);
     }
 
-    rule +$ei.event(square("forwardRight", string y)) : squareInfo("forwardRight", string z){
-        -squareInfo("forwardRight", z);
-        +squareInfo("forwardRight", y);
+    rule +$ei.event(square("forwardRight", string fr)) : squareInfo("forwardRight", string ofr){
+        -squareInfo("forwardRight", ofr);
+        +squareInfo("forwardRight", fr);
     }
 
-    rule +$ei.event(square("forwardRight", string y)) {
-        +squareInfo("forwardRight", y);
+    rule +$ei.event(square("forwardRight", string fr)) {
+        +squareInfo("forwardRight", fr);
     }
 
-    rule +$ei.event(location(int X, int Y)) : locationInfo(int z, int w) {
-        -locationInfo(z, w);
+    rule +$ei.event(location(int X, int Y)) : locationInfo(int Z, int W) {
+        -locationInfo(Z, W);
         +locationInfo(X, Y);
-        //debug.dumpBeliefs();
+        debug.dumpBeliefs();
     }
 
     rule +$ei.event(location(int X, int Y)) {
         +locationInfo(X, Y);
-        //debug.dumpBeliefs();
+        debug.dumpBeliefs();
     }
 }
