@@ -11,16 +11,16 @@ agent Vac extends VacOntology{
         S.sleep(2000);
         ei.move("west", 0);
         S.sleep(1000);
-        if(startLocation == "topLeft"){
+        if(startLocation == "upperLeft"){
             !movement(0,1);
         }
-        if(startLocation == "topRight"){
+        if(startLocation == "upperRight"){
             !movement(15,3);
         }
-        if(startLocation == "botLeft"){
+        if(startLocation == "lowerLeft"){
             !movement(0,5);
         }
-        if(startLocation == "botRight"){
+        if(startLocation == "lowerRight"){
             !movement(15,7);
         }
     }
@@ -37,7 +37,7 @@ agent Vac extends VacOntology{
     rule +!movement(int x, int y) : ei.location(int botx, int boty) & y > boty {
         if(x == botx){
             ei.move("south", 0);
-            S.sleep(500);
+            S.sleep(1000);
             query(ei.square("forward", string f));
             if(f == "obstacle"){
                 if(x > 10){
@@ -105,7 +105,7 @@ agent Vac extends VacOntology{
     }
 
     rule +!seekDust() : ei.square("left", string l) & ei.square("right", string r) & ei.square("forward", string f)
-    & ei.square("forwardRight", string fr) & ei.square("forwardLeft", string fl){
+    & ei.square("forwardRight", string fr) & ei.square("forwardLeft", string fl) & ei.square("here", string h){
         if(l == "dust"){
             ei.move("left", 1);
             ei.clean();
@@ -123,7 +123,8 @@ agent Vac extends VacOntology{
         if(fl == "dust" & (f == "empty" | f == "dust")){
             ei.move("forward", 1);
             if(h == "dust"){
-              ei.clean();
+                S.sleep(500);
+                ei.clean();
             }
             ei.move("left", 1);
             ei.clean();
@@ -133,6 +134,7 @@ agent Vac extends VacOntology{
         } else if((l == "empty" |  l == "dust") & fl == "dust"){
             ei.move("left", 1);
             if(h == "dust"){
+               S.sleep(500);
                ei.clean();
             }
             ei.move("right", 1);
@@ -145,6 +147,7 @@ agent Vac extends VacOntology{
         if(fr == "dust" & (f == "empty" | f == "dust")){
              ei.move("forward", 1);
              if(h == "dust"){
+                S.sleep(500);
                 ei.clean();
              }
              ei.move("right", 1);
@@ -153,9 +156,10 @@ agent Vac extends VacOntology{
              ei.move("right", 0);
         } else if((r == "empty" | r == "dust") & fr == "dust"){
              ei.move("right", 1);
-             if(h == "dust"){
-                ei.clean();
-             }
+            if(h == "dust"){
+               S.sleep(500);
+               ei.clean();
+            }
              ei.move("left", 1);
              ei.clean();
              ei.move("back", 1);
@@ -180,7 +184,8 @@ agent Vac extends VacOntology{
                 if(l == "dust" | l == "empty"){
                     ei.move("left", 1);
                     if(h == "dust"){
-                        ei.clean();
+                       S.sleep(500);
+                       ei.clean();
                     }
                     ei.move("right", 1);
                 }
@@ -188,13 +193,15 @@ agent Vac extends VacOntology{
                 if(r == "dust" | r == "empty"){
                     ei.move("right", 1);
                     if(h == "dust"){
-                        ei.clean();
+                       S.sleep(500);
+                       ei.clean();
                     }
                     ei.move("left", 1);
                 }
             } else if(l == "dust" | l == "empty"){
                 ei.move("left", 1);
                 if(h == "dust"){
+                   S.sleep(500);
                    ei.clean();
                 }
                 ei.move("left", 1);
@@ -202,6 +209,7 @@ agent Vac extends VacOntology{
             } else {
                 ei.move("right", 1);
                 if(h == "dust"){
+                   S.sleep(500);
                    ei.clean();
                 }
                 ei.move("right", 1);
@@ -213,6 +221,7 @@ agent Vac extends VacOntology{
                 if(r == "dust" | r == "empty"){
                     ei.move("right", 1);
                     if(h == "dust"){
+                       S.sleep(500);
                        ei.clean();
                     }
                     ei.move("left", 1);
@@ -221,6 +230,7 @@ agent Vac extends VacOntology{
                if(l == "dust" | l == "empty"){
                   ei.move("left", 1);
                   if(h == "dust"){
+                     S.sleep(500);
                      ei.clean();
                   }
                   ei.move("right", 1);
@@ -228,6 +238,7 @@ agent Vac extends VacOntology{
            }else if(r == "dust" | r == "empty"){
                 ei.move("right", 1);
                 if(h == "dust"){
+                   S.sleep(500);
                    ei.clean();
                 }
                 ei.move("right", 1);
@@ -235,6 +246,7 @@ agent Vac extends VacOntology{
            } else {
                 ei.move("left", 1);
                 if(h == "dust"){
+                   S.sleep(500);
                    ei.clean();
                 }
                 ei.move("left", 1);

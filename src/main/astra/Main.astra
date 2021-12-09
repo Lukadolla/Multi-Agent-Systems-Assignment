@@ -11,13 +11,13 @@ agent Main extends VacOntology{
 		}
 
         S.createAgent("yellow", "Vac");
-        S.setMainGoal("yellow", ["Decco","topLeft"]);
+        S.setMainGoal("yellow", ["Decco","upperLeft"]);
         S.createAgent("red", "Vac");
-        S.setMainGoal("red", ["Henry","topRight"]);
+        S.setMainGoal("red", ["Henry","upperRight"]);
         S.createAgent("blue", "Vac");
-        S.setMainGoal("blue", ["Lloyd","botLeft"]);
+        S.setMainGoal("blue", ["Lloyd","lowerLeft"]);
         S.createAgent("pink", "Vac");
-        S.setMainGoal("pink", ["Harry","botRight"]);
+        S.setMainGoal("pink", ["Harry","lowerRight"]);
         ei.startEnv();
 	}
 }
