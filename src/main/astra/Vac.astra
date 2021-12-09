@@ -1,5 +1,8 @@
 agent Vac extends VacOntology{
     rule +!main(list args) {
+
+        //Initializing and joining bots to vacuum world
+
         ei.launch("vacuumworld","dependency/vacuumworld-1.2.0.jar");
         ei.join();
 
@@ -11,6 +14,9 @@ agent Vac extends VacOntology{
         S.sleep(2000);
         ei.move("west", 0);
         S.sleep(1000);
+
+        //Setting initial destinations of each bot
+
         if(startLocation == "upperLeft"){
             !movement(0,1);
         }
@@ -25,6 +31,7 @@ agent Vac extends VacOntology{
         }
     }
 
+    //Moving the bots to their target x coordinates
     rule +!movement(int x, int y) : ei.location(int botx, int boty) & x == botx & y == boty {
         if(x > 10){
             x = 0;
@@ -34,11 +41,13 @@ agent Vac extends VacOntology{
         !movement(x, y);
     }
 
+    //Movement rule if the bot has not reached its y coordinate and is "below" the y line it is meant to be on
     rule +!movement(int x, int y) : ei.location(int botx, int boty) & y > boty {
         if(x == botx){
             ei.move("south", 0);
             S.sleep(1000);
             query(ei.square("forward", string f));
+            //If the bot's destination is an obstacle it will make change the x coordinate of its target
             if(f == "obstacle"){
                 if(x > 10){
                     x = M.intValue("" + x) - 1;
@@ -51,11 +60,13 @@ agent Vac extends VacOntology{
         !movement(x, y);
     }
 
+    //Movement rule if the bot has not reached its y coordinate and is "above" the y line it is meant to be on
     rule +!movement(int x, int y) : ei.location(int botx, int boty) & y < boty {
         if(x == botx){
             ei.move("north", 0);
             S.sleep(500);
             query(ei.square("forward", string f));
+            //If the bot's destination is an obstacle it will make change the x coordinate of its target
             if(f == "obstacle"){
                 if(x > 10){
                     x = M.intValue("" + x) - 1;
@@ -68,27 +79,34 @@ agent Vac extends VacOntology{
         !movement(x, y);
     }
 
+    //Movement rule for if the bot has already reached its y line but must now reach its x coordinate and it is too far left of the target
     rule +!movement(int x, int y) : ei.location(int botx, int boty) & x > botx & y == boty {
         !moveForward("east");
         !movement(x, y);
     }
 
+    //Movement rule for if the bot has already reached its y line but must now reach its x coordinate and it is too far right of the target
     rule +!movement(int x, int y) : ei.location(int botx, int boty) & x < botx & y == boty {
         !moveForward("west");
         !movement(x, y);
     }
 
+    //Generic movement rule
     rule +!movement(int x, int y) {
         !movement(x, y);
     }
 
-    rule +!moveForward(string direction){
+    //Rotating bot to appropriate direction that it is meant to head in
+    rule +!moveForward(string direction) : ei.square("here", string h){
         S.sleep(1000);
         ei.move(direction, 0);
-        ei.clean();
+        if(h == "dust"){
+            ei.clean();
+        }
         !goForward(direction);
     }
 
+   //Core driving rule which allows for looking for and cleaning up dust and avoiding obstacles
     rule +!goForward(string direction) {
         !seekDust();
         S.sleep(500);
@@ -104,6 +122,7 @@ agent Vac extends VacOntology{
         }
     }
 
+    //Rule for searching and cleaning encountered dust
     rule +!seekDust() : ei.square("left", string l) & ei.square("right", string r) & ei.square("forward", string f)
     & ei.square("forwardRight", string fr) & ei.square("forwardLeft", string fl) & ei.square("here", string h){
         if(l == "dust"){
@@ -173,10 +192,12 @@ agent Vac extends VacOntology{
         }
     }
 
+    //Rule to ensure that the original seekDust runs
     rule +!seekDust(){
         !seekDust();
     }
 
+    //Rule for dealing with encountered obstacles
     rule +!obstacleAvoid(string direction) : ei.square("left", string l) & ei.square("right", string r)
     & ei.square("forwardRight", string fr) & ei.square("forwardLeft", string fl) & ei.square("here", string h){
         if(direction == "east" | direction == "south"){
@@ -256,6 +277,7 @@ agent Vac extends VacOntology{
 
     }
 
+    //Rule to ensure obstacleAvoid rule runs
     rule +!obstacleAvoid(string direction){
         C.println("Can't work out concept");
         !obstacleAvoid(direction);
