@@ -3,6 +3,7 @@ agent VacOntology{
     module System S;
 	module EIS ei;
     module Debug debug;
+    module Math M;
 
     types vac{
         formula squareInfo(string, string);
