@@ -12,7 +12,7 @@ agent Vac extends VacOntology{
         ei.link(at_index(args, 0, string));
         startLocation = at_index(args, 1, string);
         S.sleep(2000);
-        ei.move("west", 0);
+        ei.move("west", 0); // Initializing action
         S.sleep(1000);
 
         //Setting initial destinations of each bot
